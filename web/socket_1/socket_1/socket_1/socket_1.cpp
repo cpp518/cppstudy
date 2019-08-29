@@ -72,12 +72,15 @@ public:
 	一直接收客户端发送的信息，直到发送exit
 	*/
 	void f_tcp_allRecv() {
+		
+		memset(&clntAddr, sizeof(SOCKADDR), 0);
+		//使用accept返回的套接字clntSock来与响应的客户端进行交流，即响应客户端的connect
+		SOCKET clntSock = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
 		while (1) {
 			//接受客户端请求
-			memset(&clntAddr, sizeof(SOCKADDR), 0);
-		//	std::cout << clntAddr.sin_addr.s_addr;
-			//使用accept返回的套接字clntSock来与响应的客户端进行交流，即响应客户端的connect
-			SOCKET clntSock = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
+			
+			
+			
 			
 			//确定收到内容的长度
 			int len = recv(clntSock, buf, maxlen, 0);
@@ -91,10 +94,11 @@ public:
 			//char *str = "HelloWorld!";
 			//使用改长度
 			//send(clntSock, buf,len, NULL);
-
-			//关闭套接字
-			closesocket(clntSock);
+			
 		}
+		//关闭套接字
+		closesocket(clntSock);
+		
 	}
 	/*
 	粘包展示
@@ -214,13 +218,13 @@ int main()
 	//PF_INET AF_INET 使用ipv4
 	//SOCK_STREAM 使用面向连接传输方式
 	//IPPROTO_TCP 使用TCP协议
-	myServSOCKET mysock("udp");
+	myServSOCKET mysock("tcp");
 
 
-	//mysock.f_tcp_allRecv();
+	mysock.f_tcp_allRecv();
 	//mysock.f_visioPacket_Recv();
 	//mysock.f_fileTransfer_send();
-	mysock.f_udp_recv();
+	//mysock.f_udp_recv();
 	return 0;
 }
 

@@ -49,12 +49,13 @@ public:
 	一直在发送消息去服务器
 	*/
 	void f_tcp_AllSend() {
+		f_tcp_CreateSocket();
+		connect(client, (sockaddr*)&servAddr, sizeof(sockaddr_in));
 		//循环
 		while (1) {
 			std::string s;
-			f_tcp_CreateSocket();
+			
 			//连接
-			connect(client, (sockaddr*)&servAddr, sizeof(sockaddr_in));
 			std::cout << "请输入内容（长度为100个字符）：";
 			std::cin >> s;
 		//	std::getline(std::cin, s);
@@ -62,10 +63,11 @@ public:
 			if (s.compare("exit") == 0) {
 				break;
 			}
-			closesocket(client);
+			
 			//	i++;
 		}
 		//关闭套接字
+		closesocket(client);
 	}
 	/*
 	粘包发送
@@ -150,9 +152,9 @@ public:
 int main()
 {
 	myClieSOCKET mysock;
-	//mysock.f_tcp_AllSend();
+	mysock.f_tcp_AllSend();
 	//mysock.f_visiopacket_send(5);
-	mysock.f_udp_send();
+	//mysock.f_udp_send();
 	return 0;
 }
 
