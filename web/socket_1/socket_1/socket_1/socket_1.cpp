@@ -24,10 +24,10 @@ class myServSOCKET {
 
 
 	void f_tcp_CreateSocket() {
-		servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+		servSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	}
 	void f_udp_CreateSocket() {
-		servSock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		servSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	}
 
 	//绑定套接字
@@ -74,7 +74,8 @@ public:
 	void f_tcp_allRecv() {
 		while (1) {
 			//接受客户端请求
-			
+			memset(&clntAddr, sizeof(SOCKADDR), 0);
+		//	std::cout << clntAddr.sin_addr.s_addr;
 			//使用accept返回的套接字clntSock来与响应的客户端进行交流，即响应客户端的connect
 			SOCKET clntSock = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
 			
@@ -86,6 +87,7 @@ public:
 				break;
 			}
 			std::cout << s << std::endl;
+			//std::cout <<clntAddr.sin_addr.s_addr<<" "<< 
 			//char *str = "HelloWorld!";
 			//使用改长度
 			//send(clntSock, buf,len, NULL);
@@ -190,11 +192,14 @@ public:
 	void f_udp_recv() {
 		while (1) {
 			//udp接收信息
-			int recvlen = recvfrom(servSock, buf, readlen, 0, (sockaddr*)&sockAddr, &nSize);
+			int recvlen = recvfrom(servSock, buf, readlen, 0, (sockaddr*)&clntAddr, &nSize);
 			if (strcmp(buf, "exit") == 0) {
 				break;
 			}
-			std::cout << "收到的信息是：" << buf << std::endl;
+			std::cout << clntAddr.sin_port<<" "<<"收到的信息是：" << buf << std::endl;
+			//将接收的数据处理一下，再发回去
+			buf[recvlen/2] = 0;
+			sendto(servSock, buf, recvlen, 0, (sockaddr*)&clntAddr, nSize);
 		}
 
 	}
@@ -212,7 +217,7 @@ int main()
 	myServSOCKET mysock("udp");
 
 
-	//mysock.f_allRecv();
+	//mysock.f_tcp_allRecv();
 	//mysock.f_visioPacket_Recv();
 	//mysock.f_fileTransfer_send();
 	mysock.f_udp_recv();

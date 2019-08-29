@@ -129,7 +129,9 @@ public:
 
 	void f_udp_send() {
 		f_udp_CreateSocket();
+		int nSize = sizeof(sockaddr);
 		while (1) {
+			
 			std::string sendMessage;
 			std::cout << "输入要发送的内容（输入exit结束）：";
 			std::cin >> sendMessage;
@@ -138,6 +140,8 @@ public:
 			//	std::cout << "退出客户端" << std::endl;
 				break;
 			}
+			recvfrom(client, buf, readlen, 0, (sockaddr*)&servAddr, &nSize);
+			std::cout << "我收到了服务器的：" << buf << std::endl;
 		}
 	} 
 
@@ -146,7 +150,7 @@ public:
 int main()
 {
 	myClieSOCKET mysock;
-//	mysock.f_AllSend();
+	//mysock.f_tcp_AllSend();
 	//mysock.f_visiopacket_send(5);
 	mysock.f_udp_send();
 	return 0;
