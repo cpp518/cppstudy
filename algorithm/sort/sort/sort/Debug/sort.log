@@ -1,0 +1,4 @@
+﻿  sort.cpp
+d:\hclabproject\algorithm\sort\sort\sort\sort.cpp(305): warning C4018: “<”: 有符号/无符号不匹配
+  sort.vcxproj -> D:\HCLabProject\algorithm\sort\sort\Debug\sort.exe
+  sort.vcxproj -> D:\HCLabProject\algorithm\sort\sort\Debug\sort.pdb (Full PDB)
