@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include "myClieSOCKET.h"
+//#pragma once
 
+#include "stdafx.h"
 
 myClieSOCKET::myClieSOCKET()
 {
@@ -64,10 +64,11 @@ num：发送的次数
 void myClieSOCKET::f_tcp_visiopacket_send(int num) {
 	f_tcp_CreateSocket();
 	connect(client, (sockaddr*)&servAddr, sizeof(sockaddr));
-	std::string s("1234");
+	std::string s("123456789A");
 	for (int i = 0; i < num; ++i)
+		//send()
 		std::cout << send(client, s.c_str(), s.size(), 0) << std::endl;
-	send(client, "\0", 1, 0);
+//	send(client, "\0", 1, 0);
 	//让服务端先读取完前面的内容在发送结束
 	Sleep(4000);
 	s = "exit";

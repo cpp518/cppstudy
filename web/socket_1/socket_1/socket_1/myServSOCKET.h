@@ -31,7 +31,10 @@ public:
 	粘包展示
 	*/
 	void f_tcp_visioPacket_Recv();
-
+	/*
+	解决粘包问题
+	*/
+	void f_tcp_solveVisioPacket_Recv();
 	/*
 	文件传输
 	*/

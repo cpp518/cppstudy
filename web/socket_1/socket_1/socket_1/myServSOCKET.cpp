@@ -5,7 +5,7 @@
 
 myServSOCKET::myServSOCKET(std::string input_type) :type(input_type) {
 	//MAKEWORD 将2个byte型合成1个16位的无符号型，第一个参数为低8位的值，第二个参数为高8位的值
-	WSAStartup(MAKEWORD(2, 2), &wsadata);  //说明使用winsocket版本号为2.2
+	WSAStartup(MAKEWORD(2, 2), &wsadata);  //说明使用winsock版本号为2.2
 	if (type.compare("tcp") == 0) {
 		f_tcp_CreateSocket();
 	}
@@ -56,9 +56,6 @@ void myServSOCKET::f_tcp_allRecv() {
 	//使用accept返回的套接字clntSock来与响应的客户端进行交流，即响应客户端的connect
 	SOCKET clntSock = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
 	while (1) {
-		//接受客户端请求
-
-
 		//确定收到内容的长度
 		int len = recv(clntSock, buf, maxlen, 0);
 		std::string s(buf);
@@ -81,12 +78,11 @@ void myServSOCKET::f_tcp_allRecv() {
 粘包展示
 */
 void myServSOCKET::f_tcp_visioPacket_Recv() {
+	//接受客户端的连接
 	SOCKET client = accept(servSock, (sockaddr*)&clntAddr, &nSize);
+	//通过sleep来让客户端信息全部发送到缓冲区，让服务器能够一次读取完
+	Sleep(1000);
 	while (1) {
-		//接受客户端的连接
-
-		//通过sleep来让客户端信息全部发送到缓冲区，让服务器能够一次读取完
-		Sleep(1000);
 		//接受到信息
 		int len = recv(client, buf, maxlen, 0);
 		std::string s(buf);
@@ -95,6 +91,56 @@ void myServSOCKET::f_tcp_visioPacket_Recv() {
 			break;
 		}
 		std::cout << s << " " << len << std::endl;
+
+	}
+	closesocket(client);
+}
+/*解决粘包问题*/
+void myServSOCKET::f_tcp_solveVisioPacket_Recv() {
+	//接受客户端的连接
+	SOCKET client = accept(servSock, (sockaddr*)&clntAddr, &nSize);
+	char temp[maxlen];
+	memset(temp, 0, sizeof(temp));
+	//通过sleep来让客户端信息全部发送到缓冲区，让服务器能够一次读取完
+	Sleep(1000);
+	int vBufSite = 0;
+	int len = recv(client, buf, 7, 0);
+	while (1) {
+		int vTempSite = 0;
+		bool vRead = true;
+		//接受到信息，注意这里的8，表示一次不能读完信息
+		while (vRead) {
+			if (vBufSite >=len) {
+				len = recv(client, buf, 7, 0);
+				vBufSite = 0;
+			}
+			while(vBufSite < len ) {
+				if (buf[vBufSite] == 0) {
+					vRead = false;
+					temp[vTempSite] = 0;
+					++vBufSite;
+					break;
+				}
+				else if (buf[vBufSite] != 'A') {
+					temp[vTempSite++] = buf[vBufSite];
+					++vBufSite;
+				}
+				else {
+					vRead = false;
+					temp[vTempSite] = 0;
+					++vBufSite;
+					break;
+				}
+			}
+		}
+		std::string s(temp);
+		//std::string s(&buf[5]);
+		if (s.compare("exit") == 0) {
+			std::cout << "接收到关闭信息，关闭服务器" << std::endl;
+			break;
+		}
+		std::cout << s << std::endl;
+		temp[0] = 0;
 
 	}
 	closesocket(client);
@@ -182,5 +228,5 @@ void myServSOCKET::f_udp_recv() {
 		buf[recvlen / 2] = 0;
 		sendto(servSock, buf, recvlen, 0, (sockaddr*)&clntAddr, nSize);
 	}
-
+	
 }
