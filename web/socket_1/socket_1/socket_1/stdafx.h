@@ -14,7 +14,14 @@
 #include <ctime>
 #include <string>
 #include <fstream>
+#include <winsock2.h>
+#include <WS2tcpip.h>
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
+#define maxlen 200
+#define readlen 100
+
+
+
+
 
 // TODO:  在此处引用程序需要的其他头文件
